@@ -1,5 +1,7 @@
 package com.crm.corecrm.entities;
 
+import com.crm.corecrm.customValidation.user.UniqueEmail;
+import com.crm.corecrm.customValidation.user.UniqueUsername;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +31,7 @@ public class Users {
     @NotBlank(message = "Имя пользователя не может быть пустым")
     @Size(min = 3, max = 20, message = "Имя пользователя должно состоять из 3 - 20 символов")
     @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_]*$", message = "Имя пользователя должно начинаться с буквы и может содержать только буквы, цифры и подчеркивания")
+    @UniqueUsername
     private String username;
 
     @NotBlank(message = "Пароль не может быть пустым")
@@ -55,6 +58,7 @@ public class Users {
     @Email(message = "Введите корректный email адрес")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             message = "Email должен быть в формате example@domain.com")
+    @UniqueEmail()
     private String email;
 
     @NotBlank(message = "Номер телефона не может быть пустым")
