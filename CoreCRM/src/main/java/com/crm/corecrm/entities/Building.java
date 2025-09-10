@@ -7,11 +7,11 @@ import jakarta.persistence.Id;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
+//@Entity
 public class Building {
 
-    @Id
-    @GeneratedValue
+//    @Id
+//    @GeneratedValue
     private Long id;
     private String address;
     private String cadastralNumber;

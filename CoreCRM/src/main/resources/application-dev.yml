@@ -1,4 +1,14 @@
 spring:
   application:
     name: CoreCRM
+  messages:
+    encoding: UTF-8
   datasource:
+    url: ${database.url}
+    username: ${database.username}
+    password: ${database.password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

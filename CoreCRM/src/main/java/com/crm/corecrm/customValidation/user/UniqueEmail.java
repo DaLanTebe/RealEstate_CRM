@@ -15,4 +15,8 @@ public @interface UniqueEmail {
 
     String message() default "Пользователь с таким email уже зарегистрирован";
 
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
+
 }

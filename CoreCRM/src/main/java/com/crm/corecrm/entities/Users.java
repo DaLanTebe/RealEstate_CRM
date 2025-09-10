@@ -37,8 +37,8 @@ public class Users {
     @NotBlank(message = "Пароль не может быть пустым")
     @Size(min = 8, max = 100, message = "Пароль должен содержать 8 - 100 символов")
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$",
-            message = "Пароль должен содержать хотя бы 1 цифру, 1 строчную, 1 заглавную букву и 1 специальный символ. Не должен содержать пробелов"
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?:[@#$%^&+=!]*)$",
+            message = "Пароль должен содержать хотя бы 1 цифру, 1 строчную и 1 заглавную букву"
     )
     private String password;
 
@@ -75,8 +75,8 @@ public class Users {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany
-    private List<Tasks> tasksList;
+//    @OneToMany
+//    private List<Tasks> tasksList;
 
     public enum UserRole {
         ADMIN, MANAGER, USER, AGENT, CLIENT, UNKNOWN;
