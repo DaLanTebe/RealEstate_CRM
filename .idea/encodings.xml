@@ -2,9 +2,15 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/ContentLoaderAdapter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ContentLoaderAdapter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ContentProcessor/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ContentProcessor/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/CoreCRM/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/CoreCRM/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/NotificationService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/NotificationService/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/PriceHistory/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/PriceHistory/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

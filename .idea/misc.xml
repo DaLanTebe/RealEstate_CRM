@@ -12,6 +12,7 @@
         <option value="$PROJECT_DIR$/ContentLoaderAdapter/pom.xml" />
         <option value="$PROJECT_DIR$/ContentProcessor/pom.xml" />
         <option value="$PROJECT_DIR$/PriceHistory/pom.xml" />
+        <option value="$PROJECT_DIR$/NotificationService/pom.xml" />
       </list>
     </option>
   </component>
