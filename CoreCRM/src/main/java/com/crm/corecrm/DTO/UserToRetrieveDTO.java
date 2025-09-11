@@ -1,15 +1,12 @@
 package com.crm.corecrm.DTO;
 
+import com.crm.corecrm.entities.Tasks;
 import lombok.Data;
 
-import java.io.Serializable;
+import java.util.List;
 
 @Data
-public class UserDTO implements Serializable {
-
-    private String username;
-
-    private String password;
+public class UserToRetrieveDTO {
 
     private String firstName;
 
@@ -18,4 +15,6 @@ public class UserDTO implements Serializable {
     private String email;
 
     private String phoneNumber;
+
+    private List<Tasks> tasksList;
 }

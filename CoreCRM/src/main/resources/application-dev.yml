@@ -3,12 +3,18 @@ spring:
     name: CoreCRM
   messages:
     encoding: UTF-8
+
   datasource:
     url: ${database.url}
     username: ${database.username}
     password: ${database.password}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: public

@@ -1,10 +1,20 @@
 package com.crm.corecrm.service;
 
-import com.crm.corecrm.DTO.UserDTO;
+import com.crm.corecrm.DTO.UserToRetrieveDTO;
+import com.crm.corecrm.DTO.UserToSaveDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 public interface RegistrationService {
 
-    public ResponseEntity<String> registerUser(UserDTO user);
+    ResponseEntity<String> registerUser(UserToSaveDTO user);
+
+    ResponseEntity<UserToRetrieveDTO> getUsers(UUID userId);
+
+    ResponseEntity<String> updateUser(UUID id, UserToSaveDTO user);
+
+    ResponseEntity<String> deleteUser(UUID userId);
+
+
 }

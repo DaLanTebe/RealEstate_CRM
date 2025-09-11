@@ -1,17 +1,12 @@
 package com.crm.corecrm.entities;
 
-import com.crm.corecrm.customValidation.user.UniqueEmail;
-import com.crm.corecrm.customValidation.user.UniqueUsername;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString(exclude = {"password", "username"})
-@EqualsAndHashCode(exclude = {"password", "username", "updatedAt"})
+@EqualsAndHashCode(exclude = {"password", "username"})
 public class Users {
 
     @Id
@@ -31,13 +26,12 @@ public class Users {
     @NotBlank(message = "Имя пользователя не может быть пустым")
     @Size(min = 3, max = 20, message = "Имя пользователя должно состоять из 3 - 20 символов")
     @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_]*$", message = "Имя пользователя должно начинаться с буквы и может содержать только буквы, цифры и подчеркивания")
-    @UniqueUsername
     private String username;
 
     @NotBlank(message = "Пароль не может быть пустым")
     @Size(min = 8, max = 100, message = "Пароль должен содержать 8 - 100 символов")
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?:[@#$%^&+=!]*)$",
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).+$",
             message = "Пароль должен содержать хотя бы 1 цифру, 1 строчную и 1 заглавную букву"
     )
     private String password;
@@ -58,7 +52,6 @@ public class Users {
     @Email(message = "Введите корректный email адрес")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
             message = "Email должен быть в формате example@domain.com")
-    @UniqueEmail()
     private String email;
 
     @NotBlank(message = "Номер телефона не может быть пустым")
@@ -67,22 +60,7 @@ public class Users {
     private String phoneNumber;
 
 
-    private UserRole role;
-    private UserStatus status;
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tasks> tasksList;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-//    @OneToMany
-//    private List<Tasks> tasksList;
-
-    public enum UserRole {
-        ADMIN, MANAGER, USER, AGENT, CLIENT, UNKNOWN;
-    }
-
-    public enum UserStatus {
-        ACTIVE, INACTIVE, PENDING, BLOCKED, DELETED
-    }
 }

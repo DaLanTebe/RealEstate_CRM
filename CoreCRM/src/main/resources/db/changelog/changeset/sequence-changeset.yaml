@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: yourname
+      changes:
+        - createSequence:
+            sequenceName: building_seq
+            startValue: 1
+            incrementBy: 1
