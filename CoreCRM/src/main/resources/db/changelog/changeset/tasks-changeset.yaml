@@ -23,6 +23,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
                   name: assigned_to
                   type: UUID
                   constraints:

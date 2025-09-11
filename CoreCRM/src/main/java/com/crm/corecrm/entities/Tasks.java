@@ -10,14 +10,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "assignedTo")
 @EqualsAndHashCode
 public class Tasks {
 
@@ -32,9 +31,12 @@ public class Tasks {
     @NotBlank
     private String description;
 
-    @NotNull
-    @JoinColumn(name = "assigned_to")
-    private UUID assignedTo;
+    @Version
+    private Long version;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to", nullable = false)
+    private Users assignedTo;
 
     @NotNull
     @FutureOrPresent(message = "Введите корректную дату и время срока срока выполнения")
@@ -60,6 +62,7 @@ public class Tasks {
         COMPLETED
     }
     public enum Priority {
+        NONE,
         LOW,
         MEDIUM,
         HIGH
