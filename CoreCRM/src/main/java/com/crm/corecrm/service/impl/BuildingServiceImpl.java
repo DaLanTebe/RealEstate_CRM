@@ -21,6 +21,6 @@ public class BuildingServiceImpl implements BuildingService {
     public ResponseEntity<String> addBuilding(Building building) {
         building.setStatus(Building.Status.NOTASSIGNED);
         buildingRepo.save(building);
-        return ResponseEntity.ok("Task added");
+        return ResponseEntity.ok("Building added");
     }
 }

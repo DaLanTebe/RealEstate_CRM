@@ -8,8 +8,6 @@ import java.util.UUID;
 @Data
 public class UserToSaveDTO implements Serializable {
 
-    private UUID id;
-
     private String username;
 
     private String password;
