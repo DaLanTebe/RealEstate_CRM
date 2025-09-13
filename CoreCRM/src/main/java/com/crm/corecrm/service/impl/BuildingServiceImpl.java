@@ -19,7 +19,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public ResponseEntity<String> addBuilding(Building building) {
-        building.setStatus(Building.Status.ACTIVE);
+        building.setStatus(Building.Status.NOTASSIGNED);
         buildingRepo.save(building);
         return ResponseEntity.ok("Task added");
     }

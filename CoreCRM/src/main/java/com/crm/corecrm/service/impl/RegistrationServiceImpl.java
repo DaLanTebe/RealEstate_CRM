@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         Users userToSave = userMapper.toUser(user);
-
+        userToSave.setTasksList(new ArrayList<>());
         try {
             byte[] passwordsHash = MessageDigest.getInstance("SHA-256").digest(user.getPassword().getBytes());
             String encodedPassword = Base64.getEncoder().encodeToString(passwordsHash);

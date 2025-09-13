@@ -20,7 +20,7 @@ public class TasksServiceImpl implements TasksService {
     @Override
     public ResponseEntity<String> addTask(Tasks task) {
         task.setStatus(Tasks.Status.NEW);
-        task.setPriority(Tasks.Priority.NONE);
+        task.setPriority(Tasks.Priority.CONTACT);
         tasksRepo.save(task);
         return ResponseEntity.ok("Task added");
     }

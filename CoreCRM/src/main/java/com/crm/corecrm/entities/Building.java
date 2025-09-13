@@ -38,14 +38,15 @@ public class Building {
     @Positive(message = "Цена должна быть положительной")
     private BigDecimal price;
 
-    @NotBlank(message = "Описание обязательно")
+    @NotBlank(message = "Описание обязательно, в описании указать номер владельца")
     private String description;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
     public enum Status {
-        ACTIVE,
-        SOLD,
+        NOTASSIGNED,
+        ASSIGNED,
+        SOLD
     }
 }

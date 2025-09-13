@@ -62,9 +62,8 @@ public class Tasks {
         COMPLETED
     }
     public enum Priority {
-        NONE,
-        LOW,
-        MEDIUM,
-        HIGH
+        CONTACT,
+        DOCUMENTS,
+        DONE
     }
 }
