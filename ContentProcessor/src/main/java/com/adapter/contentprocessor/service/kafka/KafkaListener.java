@@ -1,4 +1,4 @@
-package com.adapter.contentprocessor.kafka;
+package com.adapter.contentprocessor.service.kafka;
 
 import org.springframework.stereotype.Service;
 

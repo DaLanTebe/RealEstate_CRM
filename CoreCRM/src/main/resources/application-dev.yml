@@ -4,9 +4,9 @@ spring:
   messages:
     encoding: UTF-8
   datasource:
-    url: ${database.url}
-    username: ${database.username}
-    password: ${database.password}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
