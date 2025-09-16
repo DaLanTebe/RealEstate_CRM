@@ -29,6 +29,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: tel_number
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
                   name: price
                   type: numeric(19,2)
                   constraints:

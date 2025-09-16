@@ -34,11 +34,15 @@ public class Building {
     @Min(value = 0, message = "Площадь должна быть положительной")
     private Double square;
 
+    @Pattern(regexp = "\\+\\d{1,15}", message = "номер телефона должен быть в международном формате, например +123456789")
+    @NotNull(message = "телефон владельца обязателен")
+    private String telNumber;
+
     @NotNull(message = "Укажите цену")
     @Positive(message = "Цена должна быть положительной")
     private BigDecimal price;
 
-    @NotBlank(message = "Описание обязательно, в описании указать номер владельца")
+    @NotBlank(message = "Описание обязательно")
     private String description;
 
     @Enumerated(EnumType.STRING)

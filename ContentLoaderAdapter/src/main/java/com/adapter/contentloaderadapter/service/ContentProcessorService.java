@@ -4,5 +4,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface ContentProcessorService {
 
-    ResponseEntity<String> process();
+    ResponseEntity<String> rosreestrUpload();
+
+    ResponseEntity<String> cianUpload();
+
+    ResponseEntity<String> domClickUpload();
 }

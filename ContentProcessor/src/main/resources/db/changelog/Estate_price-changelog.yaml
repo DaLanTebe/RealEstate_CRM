@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: yourname
+      changes:
+        - createTable:
+            tableName: estate_price
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: cadastr
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: square
+                  type: double precision
+                  constraints:
+                    nullable: false
+#              - column:
+#                  name: price
+#                  type: numeric(19,2)
+#                  constraints:
+#                    nullable: false составная таблица
+              - column:
+                  name: type
+                  type: varchar(20)
+                  constraints:
+                    nullable: true
