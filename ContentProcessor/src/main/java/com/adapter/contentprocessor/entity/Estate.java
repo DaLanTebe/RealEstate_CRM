@@ -21,6 +21,9 @@ public class Estate {
     )
     private String cadastr;
 
+    @NotNull
+    private Type type;
+
 
     @NotNull(message = "Укажите площадь")
     @Min(value = 0, message = "Площадь должна быть положительной")
@@ -32,8 +35,6 @@ public class Estate {
     @Column(name = "price_value")
     private HashMap<String, BigDecimal> price;
 
-    @NotNull
-    private Type type;
 
     public enum Type {
         COMMERCIAL,

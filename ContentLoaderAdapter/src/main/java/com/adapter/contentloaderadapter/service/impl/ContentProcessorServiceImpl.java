@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 @Service
@@ -24,7 +27,12 @@ public class ContentProcessorServiceImpl implements ContentProcessorService {
     public ResponseEntity<String> rosreestrUpload() {
 
         ObjectNode objectNode = objectMapper.createObjectNode(); // формируем json во время чтения xlsx
-        InputStream rosreestrStream = getClass().getClassLoader().getResourceAsStream("static/data/rosreestr.xlsx");
+            try (FileInputStream fileInputStream = new FileInputStream("static/data/domClick.xlsx")){
+
+            }catch (IOException e){
+
+            }
+
         //выгрузка из xlsx конвертация в json отправка в кафку батчами
 
 

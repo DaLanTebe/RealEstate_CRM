@@ -4,7 +4,7 @@ databaseChangeLog:
       author: yourname
       changes:
         - createTable:
-            tableName: estate_price
+            tableName: estate
             columns:
               - column:
                   name: id
@@ -19,6 +19,11 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
+                  name: type
+                  type: varchar(20)
+                  constraints:
+                    nullable: true
+              - column:
                   name: square
                   type: double precision
                   constraints:
@@ -28,8 +33,3 @@ databaseChangeLog:
 #                  type: numeric(19,2)
 #                  constraints:
 #                    nullable: false составная таблица
-              - column:
-                  name: type
-                  type: varchar(20)
-                  constraints:
-                    nullable: true
