@@ -23,10 +23,10 @@ public class UploadController {
     }
     @GetMapping("/cian")
     public ResponseEntity<String> enableUploadCian(){
-        return service.rosreestrUpload();
+        return service.cianUpload();
     }
     @GetMapping("/dom")
     public ResponseEntity<String> enableUploadDomClick(){
-        return service.rosreestrUpload();
+        return service.domClickUpload();
     }
 }

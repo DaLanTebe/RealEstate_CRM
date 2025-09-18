@@ -14,7 +14,6 @@ public class Estate {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank(message = "Кадастровый номер обязателен")
     @Pattern(
             regexp = "^(\\d{2}:\\d{2}:\\d{6,7}:\\d{1,4})$",
             message = "Неверный формат кадастрового номера. Ожидаемый формат: XX:XX:XXXXXXX:XXX"
@@ -26,8 +25,7 @@ public class Estate {
 
 
     @NotNull(message = "Укажите площадь")
-    @Min(value = 0, message = "Площадь должна быть положительной")
-    private Double square;
+    private String square;
 
     @ElementCollection
     @CollectionTable(name = "estate_price", joinColumns = @JoinColumn(name = "estate_id"))

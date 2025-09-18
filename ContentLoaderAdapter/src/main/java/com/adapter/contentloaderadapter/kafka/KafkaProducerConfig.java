@@ -27,7 +27,9 @@ public class KafkaProducerConfig {
         return Map.of(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
+                ProducerConfig.BATCH_SIZE_CONFIG, 16384,
+                ProducerConfig.LINGER_MS_CONFIG, 10
         );
     }
 

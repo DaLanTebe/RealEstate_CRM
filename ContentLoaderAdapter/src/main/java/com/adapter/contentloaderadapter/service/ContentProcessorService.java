@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 public interface ContentProcessorService {
 
-    ResponseEntity<String> rosreestrUpload() throws FileNotFoundException;
+    ResponseEntity<String> rosreestrUpload();
 
     ResponseEntity<String> cianUpload();
 
