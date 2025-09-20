@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 
 @Service
 public class ContentProcessorServiceImpl implements ContentProcessorService {
@@ -26,68 +27,87 @@ public class ContentProcessorServiceImpl implements ContentProcessorService {
     private ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger log = LoggerFactory.getLogger(ContentProcessorServiceImpl.class);
 
+    private final String domClickTopic = "dom-events";
+    private final String cianTopic = "cian-events";
+    private final String rosreestrTopic = "ros-events";
+    private final String domclickFileName = "static/data/domClick.xlsx";
+    private final String cianFileName = "static/data/cian.xlsx";
+    private final String rosrestrFileName = "static/data/rosreestr.xlsx";
+    private final int domClickAndCianCadastrIndex = 16;
+    private final int domClickAndCianTypeIndex = 2;
+    private final int domClickAndCianSquareIndex = 5;
+    private final int domClickAndCianPriceIndex = 8;
+    private final int rosreestrCadastrIndex = 1;
+    private final int rosreestrTypeIndex = 9;
+    private final int rosreestrSquareIndex = 5;
+    private final int rosreestrPriceIndex = 10;
+
     @Autowired
     public ContentProcessorServiceImpl(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     public ResponseEntity<String> rosreestrUpload() {
-
-        ObjectNode objectNode = objectMapper.createObjectNode(); // формируем json во время чтения xlsx
-
-
-//        kafkaTemplate.send("ros-events", "");
+        uploadRawEstates(rosreestrTopic, rosrestrFileName, rosreestrCadastrIndex, rosreestrTypeIndex, rosreestrSquareIndex, rosreestrPriceIndex);
         return ResponseEntity.ok("Отправка файлов Росреестра прошла успешно");
     }
 
     @Override
     public ResponseEntity<String> cianUpload() {
-        InputStream domClickStream = getClass().getClassLoader().getResourceAsStream("static/data/domClick.xlsx");
-//        kafkaTemplate.send("dom-events", "");
+        uploadRawEstates(cianTopic, cianFileName, domClickAndCianCadastrIndex, domClickAndCianTypeIndex, domClickAndCianSquareIndex, domClickAndCianPriceIndex);
         return ResponseEntity.ok("Отправка файлов Циана прошла успешно");
     }
 
     @Override
     public ResponseEntity<String> domClickUpload() {
-        try (FileInputStream fileInputStream = new FileInputStream("F:\\diske\\MyProgects\\RealEstateCRM\\ContentLoaderAdapter\\src\\main\\resources\\static\\data\\domClick.xlsx")){
-            XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        uploadRawEstates(domClickTopic, domclickFileName, domClickAndCianCadastrIndex, domClickAndCianTypeIndex, domClickAndCianSquareIndex, domClickAndCianPriceIndex);
+        return ResponseEntity.ok("Отправка файлов ДомКлика прошла успешно");
+    }
+
+    private void uploadRawEstates(String topic, String fileName, int cadastrIndex, int typeIndex, int squareIndex, int priceIndex) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName)){
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet sheet = workbook.getSheetAt(0);
 
             for (int i = 1; i < sheet.getLastRowNum(); i++) {
                 XSSFRow row = sheet.getRow(i);
+                if (row == null) {
+                    return;
+                }
 
-                String square = getCellString(row.getCell(5));
-                String price = getCellString(row.getCell(8)).replaceAll("\\D", "");
-                String type = findCellType(getCellString(row.getCell(2)), i);
+                String cadastr = getCellString(row.getCell(cadastrIndex));
+                String type = findCellType(getCellString(row.getCell(typeIndex)), i);
+                String square = getCellString(row.getCell(squareIndex));
+                String price = getCellString(row.getCell(priceIndex)).replaceAll("\\D", "");
 
                 ObjectNode rawEstate = objectMapper.createObjectNode();
                 rawEstate.put("square", square);
                 rawEstate.put("price", price);
                 rawEstate.put("type", type);
+                rawEstate.put("cadastr", cadastr);
 
-                kafkaTemplate.send("dom-events", rawEstate.toString());
+                kafkaTemplate.send(topic, rawEstate.toString());
             }
 
         }catch (IOException e){
-            return ResponseEntity.badRequest().body("Ошибка чтения файла");
-        }
-
-        return ResponseEntity.ok("Отправка файлов ДомКлика прошла успешно");
-    }
-
-    public String getCellString(XSSFCell cell) {
-        if (cell == null) throw new IllegalArgumentException("ячейка пустая");
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            default: throw new IllegalArgumentException("неверный тип данных ячейки");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    public String findCellType(String string, int index) {
-        if (string.toLowerCase().contains("квартир")) {
+    private String getCellString(XSSFCell cell) {
+        if (cell == null) return "";
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case NUMERIC -> String.valueOf(cell.getNumericCellValue());
+            default -> {
+                log.error("Неверный тип ячейки в строке " + cell.getRowIndex());
+                yield "";
+            }
+        };
+    }
+
+    private String findCellType(String string, int index) {
+        if (string.toLowerCase().contains("квартир") || string.toLowerCase().contains("помещение")) {
            return  "RESIDENTIAL";
         } else if (string.toLowerCase().contains("гараж")) {
             return  "GARAGE";
