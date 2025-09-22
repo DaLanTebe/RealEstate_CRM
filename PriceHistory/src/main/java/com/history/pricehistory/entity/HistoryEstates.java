@@ -1,10 +1,13 @@
-package com.adapter.contentprocessor.entity;
+package com.history.pricehistory.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +19,7 @@ import java.util.UUID;
 @Setter
 @ToString
 @EqualsAndHashCode
-public class Estate {
+public class HistoryEstates {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -38,16 +41,25 @@ public class Estate {
     @NotNull(message = "Укажите площадь")
     private String square;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "estate_price", joinColumns = @JoinColumn(name = "estate_id"))
-    @MapKeyColumn(name = "price_key")
-    @Column(name = "price_value")
-    private Map<String, BigDecimal> price = new HashMap<>();
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private PriceType priceType;
+
+    @NotNull
+    private BigDecimal price;
+
+    @CreationTimestamp
+    private LocalDateTime creationDate;
 
 
     public enum Type {
         COMMERCIAL,
         RESIDENTIAL,
         GARAGE;
+    }
+    public enum PriceType {
+        CIAN,
+        DOMCLICK,
+        ROSREESTR
     }
 }
