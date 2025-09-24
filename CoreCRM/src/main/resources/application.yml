@@ -35,3 +35,13 @@ spring:
       org.quartz.threadPool.threadCount: 10
       org.quartz.scheduler.instanceName: ClusteredScheduler
       org.quartz.scheduler.instanceId: AUTO
+
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        spring.json.add.type.info: true
