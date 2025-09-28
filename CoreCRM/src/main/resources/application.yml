@@ -4,9 +4,9 @@ spring:
   messages:
     encoding: UTF-8
   datasource:
-    url: ${database.url}
-    username: ${database.username}
-    password: ${database.password}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -29,9 +29,19 @@ spring:
       org.quartz.jobStore.clusterCheckinInterval: 20000
       org.quartz.jobStore.dataSource: quartzDS
       org.quartz.dataSource.quartzDS.driver: org.postgresql.Driver
-      org.quartz.dataSource.quartzDS.URL: ${database.url}
-      org.quartz.dataSource.quartzDS.user: ${database.username}
-      org.quartz.dataSource.quartzDS.password: ${database.password}
+      org.quartz.dataSource.quartzDS.URL: jdbc:postgresql://localhost:5432/postgres
+      org.quartz.dataSource.quartzDS.user: postgres
+      org.quartz.dataSource.quartzDS.password: postgres
       org.quartz.threadPool.threadCount: 10
       org.quartz.scheduler.instanceName: ClusteredScheduler
       org.quartz.scheduler.instanceId: AUTO
+
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      properties:
+        spring.json.add.type.info: true

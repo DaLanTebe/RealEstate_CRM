@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: price-history
+  namespace: realestatesrm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: price-history
+  template:
+    metadata:
+      labels:
+        app: price-history
+    spec:
+      containers:
+        - name: price-history
+          image: price-history:latest
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-service:5432/postgres"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "postgres"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-service:9094"
+            - name: SERVER_PORT
+              value: "8084"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: price-history-service
+  namespace: realestatesrm
+spec:
+  selector:
+    app: price-history
+  ports:
+    - port: 8084
+      targetPort: 8084
+  type: ClusterIP

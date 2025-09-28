@@ -3,6 +3,7 @@ package com.crm.corecrm.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.math.BigDecimal;
 
@@ -28,17 +29,22 @@ public class Building {
             regexp = "^(\\d{2}:\\d{2}:\\d{6,7}:\\d{1,4})$",
             message = "Неверный формат кадастрового номера. Ожидаемый формат: XX:XX:XXXXXXX:XXX"
     )
+    @Column(unique = true)
     private String cadastralNumber;
 
     @NotNull(message = "Укажите площадь")
     @Min(value = 0, message = "Площадь должна быть положительной")
     private Double square;
 
+    @Pattern(regexp = "\\+\\d{1,15}", message = "номер телефона должен быть в международном формате, например +123456789")
+    @NotNull(message = "телефон владельца обязателен")
+    private String telNumber;
+
     @NotNull(message = "Укажите цену")
     @Positive(message = "Цена должна быть положительной")
     private BigDecimal price;
 
-    @NotBlank(message = "Описание обязательно, в описании указать номер владельца")
+    @NotBlank(message = "Описание обязательно")
     private String description;
 
     @Enumerated(EnumType.STRING)

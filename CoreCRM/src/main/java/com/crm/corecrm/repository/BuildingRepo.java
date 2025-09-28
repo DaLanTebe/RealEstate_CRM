@@ -2,6 +2,8 @@ package com.crm.corecrm.repository;
 
 import com.crm.corecrm.entities.Building;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,4 +12,8 @@ import java.util.List;
 public interface BuildingRepo extends JpaRepository<Building, Long> {
 
     List<Building> findAllByStatus(Building.Status status);
+
+    Boolean existsByCadastralNumber(String cadastralNumber);
+
+    Building findByCadastralNumber(String cadastralNumber);
 }

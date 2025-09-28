@@ -1,4 +1,4 @@
-package com.crm.corecrm.exception;
+package com.crm.corecrm.handler;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

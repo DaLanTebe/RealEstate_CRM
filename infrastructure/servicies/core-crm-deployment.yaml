@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-crm
+  namespace: realestatesrm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core-crm
+  template:
+    metadata:
+      labels:
+        app: core-crm
+    spec:
+      containers:
+        - name: core-crm
+          image: core-crm:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-service:5432/postgres"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "postgres"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka-service:9094"
+            - name: SERVER_PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-crm-service
+  namespace: realestatesrm
+spec:
+  selector:
+    app: core-crm
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  type: NodePort

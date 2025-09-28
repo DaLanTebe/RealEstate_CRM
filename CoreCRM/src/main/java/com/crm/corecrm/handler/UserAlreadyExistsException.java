@@ -1,4 +1,4 @@
-package com.crm.corecrm.exception;
+package com.crm.corecrm.handler;
 
 public class UserAlreadyExistsException extends RuntimeException {
 

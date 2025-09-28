@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users")
 public class UserController {
 
     private final RegistrationService registrationService;

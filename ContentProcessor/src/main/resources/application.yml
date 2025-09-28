@@ -1,0 +1,25 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: ContentProcessor
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: content-processor
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max-poll-records: 50
+    listener:
+      type: batch
+
+
+  liquibase:
+    change-log: classpath:/db/changelog/master-changelog.xml

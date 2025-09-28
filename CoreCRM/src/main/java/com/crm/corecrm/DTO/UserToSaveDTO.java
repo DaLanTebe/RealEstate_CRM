@@ -3,12 +3,9 @@ package com.crm.corecrm.DTO;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 public class UserToSaveDTO implements Serializable {
-
-    private UUID id;
 
     private String username;
 

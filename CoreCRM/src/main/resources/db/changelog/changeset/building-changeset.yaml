@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 3
-      author: yourname
+      author: dan
       changes:
         - createTable:
             tableName: building
@@ -26,6 +26,11 @@ databaseChangeLog:
               - column:
                   name: square
                   type: double precision
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tel_number
+                  type: varchar(20)
                   constraints:
                     nullable: false
               - column:
