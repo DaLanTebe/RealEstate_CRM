@@ -30,11 +30,12 @@ public class CreateTaskJob implements Job {
     private final TasksRepo tasksRepo;
     private final BuildingRepo buildingRepo;
     private final UsersRepo usersRepo;
-    private final KafkaTemplate<String, Notification> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper mapper = new ObjectMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, KafkaTemplate<String, Notification> kafkaTemplate) {
+    public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, KafkaTemplate<String, String> kafkaTemplate) {
         this.tasksRepo = tasksRepo;
         this.buildingRepo = buildingRepo;
         this.usersRepo = usersRepo;
@@ -46,11 +47,12 @@ public class CreateTaskJob implements Job {
         List<Users> freeUsers = usersRepo.findAllByTasksListIsEmptyOrTasksInTasksListIsCompleted();
         List<Building> notSoldBuildings = buildingRepo.findAllByStatus(Building.Status.NOTASSIGNED);
 
-        if (freeUsers.isEmpty() || notSoldBuildings.isEmpty()) {
-            return;
-        }
         notSoldBuildings.forEach(building -> {
-            Users user = freeUsers.get(new Random().nextInt(freeUsers.size()));
+            if (freeUsers.isEmpty() || notSoldBuildings.isEmpty()) {
+                return;
+            }
+
+            Users user = freeUsers.getFirst();
 
             Tasks task = new Tasks();
             task.setBuilding(building);
@@ -75,8 +77,11 @@ public class CreateTaskJob implements Job {
         notification.setPhoneNumber(phoneNumber);
         notification.setTitle("Вам назначена новая задача: " + title);
         notification.setDescription("Описание: " + description );
-
-            kafkaTemplate.send("notifications", notification);
-
+        try {
+            String valueToSend = objectMapper.writeValueAsString(notification);
+            kafkaTemplate.send("notifications", valueToSend);
+        } catch (JsonProcessingException e) {
+            log.error("Ошибка при парсинге JSON", e);
+        }
     }
 }

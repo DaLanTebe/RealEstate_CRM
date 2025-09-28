@@ -4,6 +4,7 @@ import com.crm.corecrm.entities.Building;
 import com.crm.corecrm.repository.BuildingRepo;
 import com.crm.corecrm.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,16 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public ResponseEntity<String> addBuilding(Building building) {
+        if (buildingRepo.existsByCadastralNumber(building.getCadastralNumber())) {
+            return ResponseEntity.badRequest().body("Такой кадастровый номер уже существует");
+        }
         building.setStatus(Building.Status.NOTASSIGNED);
         buildingRepo.save(building);
         return ResponseEntity.ok("Building added");
+    }
+
+    @Override
+    public ResponseEntity<Building> findBuildingByCadastralNumber(String cadastralNumber) {
+        return new ResponseEntity<>(buildingRepo.findByCadastralNumber(cadastralNumber), HttpStatus.OK);
     }
 }

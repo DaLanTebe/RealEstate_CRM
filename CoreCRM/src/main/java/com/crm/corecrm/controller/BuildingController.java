@@ -4,11 +4,9 @@ import com.crm.corecrm.entities.Building;
 import com.crm.corecrm.service.BuildingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/building")
@@ -24,5 +22,10 @@ public class BuildingController {
     @PostMapping
     public ResponseEntity<String> save(@RequestBody @Valid Building building) {
         return buildingService.addBuilding(building);
+    }
+
+    @GetMapping({"/{cadastralNumber}"})
+    public ResponseEntity<Building> getBuildingByCadastralNumber(@PathVariable String cadastralNumber) {
+        return buildingService.findBuildingByCadastralNumber(cadastralNumber);
     }
 }

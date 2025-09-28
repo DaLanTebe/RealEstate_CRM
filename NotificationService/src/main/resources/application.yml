@@ -6,10 +6,7 @@ spring:
     consumer:
       group-id: notification-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: com.notification.*
-        spring.json.type.mapping: notification:com.notification.notificationservice.DTO.Notification
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
   mail:
     host: smtp.gmail.com
@@ -21,3 +18,7 @@ spring:
       mail.smtp.starttls.enable: true
       mail.smtp.ssl.trust: smtp.gmail.com
       mail.default-encoding: UTF-8
+twilio:
+  accountSid: ACtest...
+  authToken: test_token
+  phoneNumber: +15017122661
