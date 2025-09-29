@@ -2,6 +2,7 @@
 
 ## 1. Запустить docker-compose.yaml
 ## 2. Запустить сервисы
+Для notification service нужен аккаунт twillo для смс и почта для email
 
 # Запуск "Прод":
 
