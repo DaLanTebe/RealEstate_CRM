@@ -2,7 +2,6 @@ package com.adapter.contentloaderadapter.service;
 
 import org.springframework.http.ResponseEntity;
 
-import java.io.FileNotFoundException;
 
 public interface ContentProcessorService {
 
