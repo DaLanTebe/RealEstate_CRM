@@ -8,6 +8,7 @@ import com.crm.corecrm.handler.UserNotFoundException;
 import com.crm.corecrm.mapper.UserMapper;
 import com.crm.corecrm.repository.UsersRepo;
 import com.crm.corecrm.service.RegistrationService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<String> registerUser(UserToSaveDTO user) {
         if (usersRepo.existsByEmail(user.getEmail()) || usersRepo.existsByUsername(user.getUsername())) {
             throw new UserAlreadyExistsException("Пользователь с таким email или username уже существует");

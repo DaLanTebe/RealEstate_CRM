@@ -3,6 +3,7 @@ package com.crm.corecrm.service.impl;
 import com.crm.corecrm.entities.Tasks;
 import com.crm.corecrm.repository.TasksRepo;
 import com.crm.corecrm.service.TasksService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<String> addTask(Tasks task) {
         task.setStatus(Tasks.Status.NEW);
         task.setPriority(Tasks.Priority.CONTACT);

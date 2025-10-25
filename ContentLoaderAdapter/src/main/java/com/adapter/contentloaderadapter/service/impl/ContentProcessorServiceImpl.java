@@ -10,6 +10,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class ContentProcessorServiceImpl implements ContentProcessorService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private ObjectMapper objectMapper = new ObjectMapper();
     private static final Logger log = LoggerFactory.getLogger(ContentProcessorServiceImpl.class);
+
 
     private final String domClickTopic = "dom-events";
     private final String cianTopic = "cian-events";

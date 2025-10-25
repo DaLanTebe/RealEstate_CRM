@@ -3,6 +3,7 @@ package com.crm.corecrm.service.impl;
 import com.crm.corecrm.entities.Building;
 import com.crm.corecrm.repository.BuildingRepo;
 import com.crm.corecrm.service.BuildingService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<String> addBuilding(Building building) {
         if (buildingRepo.existsByCadastralNumber(building.getCadastralNumber())) {
             return ResponseEntity.badRequest().body("Такой кадастровый номер уже существует");
