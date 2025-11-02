@@ -8,21 +8,36 @@ import org.springframework.context.annotation.Configuration;
 public class QuartzConfiguration {
 
     @Bean
-    public JobDetail jobDetail() {
+    public JobDetail createTaskJobDetail() {
         return JobBuilder.newJob(CreateTaskJob.class)
-                .withIdentity("createTaskJob").
-                storeDurably().build();
+                .withIdentity("createTaskJob")
+                .build();
     }
 
     @Bean
-    public Trigger trigger(JobDetail jobDetail) {
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.dailyAtHourAndMinute(8, 0);
-
+    public Trigger createTaskTrigger() {
         return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
+                .forJob(createTaskJobDetail())
                 .withIdentity("createTaskTrigger")
+                .withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(9, 0))
                 .startNow()
-//                .withSchedule(cronScheduleBuilder)
+                .build();
+    }
+
+    @Bean
+    public JobDetail outboxProcessorJobDetail() {
+        return JobBuilder.newJob(OutBoxProcessorJob.class)
+                .withIdentity("outboxProcessorJob")
+                .build();
+    }
+
+    @Bean
+    public Trigger outboxProcessorTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(outboxProcessorJobDetail())
+                .withIdentity("outboxProcessorTrigger")
+                .withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(30))
+                .startNow()
                 .build();
     }
 }
