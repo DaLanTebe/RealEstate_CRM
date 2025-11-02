@@ -2,13 +2,16 @@ package com.crm.corecrm.service.job;
 
 import com.crm.corecrm.DTO.Notification;
 import com.crm.corecrm.entities.Building;
+import com.crm.corecrm.entities.OutBoxEvent;
 import com.crm.corecrm.entities.Tasks;
 import com.crm.corecrm.entities.Users;
 import com.crm.corecrm.repository.BuildingRepo;
+import com.crm.corecrm.repository.OutBoxRepository;
 import com.crm.corecrm.repository.TasksRepo;
 import com.crm.corecrm.repository.UsersRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,19 +33,22 @@ public class CreateTaskJob implements Job {
     private final TasksRepo tasksRepo;
     private final BuildingRepo buildingRepo;
     private final UsersRepo usersRepo;
+    private final OutBoxRepository outBoxRepo;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper mapper = new ObjectMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, KafkaTemplate<String, String> kafkaTemplate) {
+    public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, OutBoxRepository outBoxRepo, KafkaTemplate<String, String> kafkaTemplate) {
         this.tasksRepo = tasksRepo;
         this.buildingRepo = buildingRepo;
         this.usersRepo = usersRepo;
+        this.outBoxRepo = outBoxRepo;
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
+    @Transactional
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         List<Users> freeUsers = usersRepo.findAllByTasksListIsEmptyOrTasksInTasksListIsCompleted();
         List<Building> notSoldBuildings = buildingRepo.findAllByStatus(Building.Status.NOTASSIGNED);
@@ -66,22 +72,34 @@ public class CreateTaskJob implements Job {
             tasksRepo.save(task);
             building.setStatus(Building.Status.ASSIGNED);
             buildingRepo.save(building);
-            sendNotification(user.getEmail(), user.getPhoneNumber(), task.getTitle(), task.getDescription());
+
+            createOutboxEvent(task, user);
+
             freeUsers.remove(user);
         });
     }
 
-    private void sendNotification(String email, String phoneNumber, String title, String description) {
+    private void createOutboxEvent(Tasks task, Users user) {
+        OutBoxEvent outboxEvent = new OutBoxEvent();
+        outboxEvent.setAggregateType("TASK");
+        outboxEvent.setAggregateId(task.getId().toString());
+        outboxEvent.setEventType("TASK_CREATED");
+
         Notification notification = new Notification();
-        notification.setEmail(email);
-        notification.setPhoneNumber(phoneNumber);
-        notification.setTitle("Вам назначена новая задача: " + title);
-        notification.setDescription("Описание: " + description );
+        notification.setEmail(user.getEmail());
+        notification.setPhoneNumber(user.getPhoneNumber());
+        notification.setTitle("Вам назначена новая задача: " + task.getTitle());
+        notification.setDescription("Описание: " + task.getDescription());
+
         try {
-            String valueToSend = objectMapper.writeValueAsString(notification);
-            kafkaTemplate.send("notifications", valueToSend);
+            outboxEvent.setPayload(objectMapper.writeValueAsString(notification));
         } catch (JsonProcessingException e) {
-            log.error("Ошибка при парсинге JSON", e);
+            log.error("Ошибка при создании outbox события", e);
+            throw new RuntimeException(e);
         }
+
+        outboxEvent.setCreatedAt(LocalDateTime.now());
+
+        outBoxRepo.save(outboxEvent);
     }
 }

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: kafka
-          image: confluentinc/cp-kafka:7.4.0  # Используем более новую версию
+          image: confluentinc/cp-kafka:7.4.0
           ports:
             - containerPort: 9094
           env:

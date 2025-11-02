@@ -34,4 +34,5 @@ public class BuildingServiceImpl implements BuildingService {
     public ResponseEntity<Building> findBuildingByCadastralNumber(String cadastralNumber) {
         return new ResponseEntity<>(buildingRepo.findByCadastralNumber(cadastralNumber), HttpStatus.OK);
     }
+
 }

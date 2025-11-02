@@ -9,4 +9,5 @@
     <include file="db/changelog/changeset/building-changeset.yaml"/>
     <include file="db/changelog/changeset/users-changeset.yaml"/>
     <include file="db/changelog/changeset/tasks-changeset.yaml"/>
+    <include file="db/changelog/changeset/outbox-events-changeset.yaml"/>
 </databaseChangeLog>
