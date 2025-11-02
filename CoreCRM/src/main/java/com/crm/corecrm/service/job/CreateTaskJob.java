@@ -5,6 +5,7 @@ import com.crm.corecrm.entities.Building;
 import com.crm.corecrm.entities.OutBoxEvent;
 import com.crm.corecrm.entities.Tasks;
 import com.crm.corecrm.entities.Users;
+import com.crm.corecrm.handler.UserNotFoundException;
 import com.crm.corecrm.repository.BuildingRepo;
 import com.crm.corecrm.repository.OutBoxRepository;
 import com.crm.corecrm.repository.TasksRepo;
@@ -95,7 +96,7 @@ public class CreateTaskJob implements Job {
             outboxEvent.setPayload(objectMapper.writeValueAsString(notification));
         } catch (JsonProcessingException e) {
             log.error("Ошибка при создании outbox события", e);
-            throw new RuntimeException(e);
+            throw new UserNotFoundException(e.getMessage());
         }
 
         outboxEvent.setCreatedAt(LocalDateTime.now());
