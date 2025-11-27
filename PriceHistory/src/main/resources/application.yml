@@ -4,7 +4,7 @@ spring:
   kafka:
    bootstrap-servers: localhost:9094
    consumer:
-    group-id: content-processor
+    group-id: price-history-processor
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     max-poll-records: 50

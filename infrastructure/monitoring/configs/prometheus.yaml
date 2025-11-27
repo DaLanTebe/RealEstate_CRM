@@ -10,18 +10,6 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
-#
-#  - job_name: 'node-exporter'
-#    static_configs:
-#      - targets: ['localhost:9090']
-#
-#  - job_name: 'postgres'
-#    static_configs:
-#      - targets: ['localhost:9090']
-#
-#  - job_name: 'kafka'
-#    static_configs:
-#      - targets: ['localhost:9090']
 
   - job_name: 'core-crm'
     metrics_path: /actuator/prometheus
@@ -32,3 +20,43 @@ scrape_configs:
       - source_labels: [ __address__ ]
         target_label: instance
         replacement: 'core-crm-application'
+
+  - job_name: 'price-history'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ 'price-history:8084' ]
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: instance
+        replacement: 'price-history-application'
+
+  - job_name: 'content-processor'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ 'content-processor:8082' ]
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: instance
+        replacement: 'content-processor-application'
+
+  - job_name: 'notification-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ 'notification-service:8085' ]
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: instance
+        replacement: 'notification-service-application'
+
+  - job_name: 'content-loader-adapter'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ 'content-loader-adapter:8081' ]
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: instance
+        replacement: 'content-loader-adapter-application'

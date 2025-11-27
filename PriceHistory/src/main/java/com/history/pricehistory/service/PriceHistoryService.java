@@ -57,6 +57,7 @@ public class PriceHistoryService {
             }
         }
         repository.saveAll(batch);
+        log.info("Заполнена история недвижимости");
     }
 
     public PriceType getPriceType(String rawPriceType) {

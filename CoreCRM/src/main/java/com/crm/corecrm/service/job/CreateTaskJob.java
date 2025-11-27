@@ -47,26 +47,6 @@ public class CreateTaskJob implements Job {
         this.usersRepo = usersRepo;
         this.outBoxRepo = outBoxRepo;
     }
-    @PostConstruct
-    public void checkQuartzJobs() throws SchedulerException {
-        log.info("=== QUARTZ JOBS CHECK ===");
-
-        // Получить все JobDetails
-        for (String groupName : scheduler.getJobGroupNames()) {
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                log.info("Найден Job: {}", jobKey);
-
-                // Получить триггеры для этого Job
-                List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
-                log.info("Триггеры для {}: {}", jobKey, triggers.size());
-
-                for (Trigger trigger : triggers) {
-                    log.info("  - Trigger: {}, Next Fire Time: {}",
-                            trigger.getKey(), trigger.getNextFireTime());
-                }
-            }
-        }
-    }
 
     @Override
     @Transactional
