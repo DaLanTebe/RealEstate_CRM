@@ -1,0 +1,80 @@
+# src/main/resources/application-prod.yml
+spring:
+  application:
+    name: CoreCRM
+  messages:
+    encoding: UTF-8
+  datasource:
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: public
+
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    properties:
+      org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.clusterCheckinInterval: 20000
+      org.quartz.jobStore.dataSource: quartzDS
+      org.quartz.dataSource.quartzDS.driver: org.postgresql.Driver
+      org.quartz.dataSource.quartzDS.URL: jdbc:postgresql://postgres:5432/postgres    # ← ИЗМЕНИТЬ
+      org.quartz.dataSource.quartzDS.user: postgres
+      org.quartz.dataSource.quartzDS.password: postgres
+      org.quartz.threadPool.threadCount: 10
+      org.quartz.scheduler.instanceName: ClusteredScheduler
+      org.quartz.scheduler.instanceId: AUTO
+
+  kafka:
+    bootstrap-servers: kafka:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      properties:
+        spring.json.add.type.info: true
+
+logging:
+  level:
+    com.crm.corecrm: INFO
+    org.hibernate: WARN
+    org.quartz: WARN
+  file:
+    name: /app/logs/core-crm.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    prometheus:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+  server:
+    port: 8080

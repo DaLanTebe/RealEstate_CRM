@@ -24,6 +24,7 @@ public class OutBoxProcessorJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
+        log.info("Starting OutBoxProcessorJob");
         List<OutBoxEvent> pendingEvents = outboxEventRepo.findByProcessedFalse();
 
         pendingEvents.forEach(event -> {

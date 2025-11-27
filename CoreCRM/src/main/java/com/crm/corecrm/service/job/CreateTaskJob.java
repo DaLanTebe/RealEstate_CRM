@@ -12,18 +12,19 @@ import com.crm.corecrm.repository.TasksRepo;
 import com.crm.corecrm.repository.UsersRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -35,49 +36,103 @@ public class CreateTaskJob implements Job {
     private final BuildingRepo buildingRepo;
     private final UsersRepo usersRepo;
     private final OutBoxRepository outBoxRepo;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ObjectMapper mapper = new ObjectMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private Scheduler scheduler;
 
     @Autowired
-    public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, OutBoxRepository outBoxRepo, KafkaTemplate<String, String> kafkaTemplate) {
+    public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, OutBoxRepository outBoxRepo) {
         this.tasksRepo = tasksRepo;
         this.buildingRepo = buildingRepo;
         this.usersRepo = usersRepo;
         this.outBoxRepo = outBoxRepo;
-        this.kafkaTemplate = kafkaTemplate;
+    }
+    @PostConstruct
+    public void checkQuartzJobs() throws SchedulerException {
+        log.info("=== QUARTZ JOBS CHECK ===");
+
+        // Получить все JobDetails
+        for (String groupName : scheduler.getJobGroupNames()) {
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                log.info("Найден Job: {}", jobKey);
+
+                // Получить триггеры для этого Job
+                List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                log.info("Триггеры для {}: {}", jobKey, triggers.size());
+
+                for (Trigger trigger : triggers) {
+                    log.info("  - Trigger: {}, Next Fire Time: {}",
+                            trigger.getKey(), trigger.getNextFireTime());
+                }
+            }
+        }
     }
 
     @Override
     @Transactional
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        List<Users> freeUsers = usersRepo.findAllByTasksListIsEmptyOrTasksInTasksListIsCompleted();
-        List<Building> notSoldBuildings = buildingRepo.findAllByStatus(Building.Status.NOTASSIGNED);
+    public void execute(JobExecutionContext jobExecutionContext) {
+        log.info("🟡 Начало CreateTaskJob");
 
-        notSoldBuildings.forEach(building -> {
+        try {
+            List<Users> freeUsers = usersRepo.findAllByTasksListIsEmptyOrTasksInTasksListIsCompleted();
+            List<Building> notSoldBuildings = buildingRepo.findAllByStatus(Building.Status.NOTASSIGNED);
+
+            log.info("Найдено свободных пользователей: {}, нераспределенных зданий: {}",
+                    freeUsers.size(), notSoldBuildings.size());
+
             if (freeUsers.isEmpty() || notSoldBuildings.isEmpty()) {
+                log.info("❌ Недостаточно данных: пользователей={}, зданий={}",
+                        freeUsers.size(), notSoldBuildings.size());
                 return;
             }
 
-            Users user = freeUsers.getFirst();
+            int createdTasks = 0;
 
-            Tasks task = new Tasks();
-            task.setBuilding(building);
-            task.setAssignedTo(user);
-            task.setTitle("Связаться с владельцем");
-            task.setDescription("Номер владельца: " + building.getDescription());
-            task.setPriority(Tasks.Priority.CONTACT);
-            task.setDueDate(LocalDateTime.now().toLocalDate().plusDays(60));
-            task.setStatus(Tasks.Status.IN_PROGRESS);
+            // Используем итератор для безопасного удаления
+            Iterator<Building> buildingIterator = notSoldBuildings.iterator();
+            Iterator<Users> userIterator = freeUsers.iterator();
 
-            tasksRepo.save(task);
-            building.setStatus(Building.Status.ASSIGNED);
-            buildingRepo.save(building);
+            while (buildingIterator.hasNext() && userIterator.hasNext()) {
+                Building building = buildingIterator.next();
+                Users user = userIterator.next();
 
-            createOutboxEvent(task, user);
+                try {
+                    createTaskForBuilding(building, user);
+                    createdTasks++;
+                    log.info("✅ Создана задача для здания {} пользователю {}",
+                            building.getId(), user.getId());
 
-            freeUsers.remove(user);
-        });
+                } catch (Exception e) {
+                    log.error("❌ Ошибка при создании задачи для здания {}: {}",
+                            building.getId(), e.getMessage(), e);
+                }
+            }
+
+            log.info("🟢 CreateTaskJob завершен. Создано задач: {}", createdTasks);
+
+        } catch (Exception e) {
+            log.error("🔴 Критическая ошибка в CreateTaskJob: {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void createTaskForBuilding(Building building, Users user) {
+        Tasks task = new Tasks();
+        task.setBuilding(building);
+        task.setAssignedTo(user);
+        task.setTitle("Связаться с владельцем");
+        task.setDescription("Номер владельца: " + building.getDescription());
+        task.setPriority(Tasks.Priority.CONTACT);
+        task.setDueDate(LocalDateTime.now().toLocalDate().plusDays(60));
+        task.setStatus(Tasks.Status.IN_PROGRESS);
+
+        tasksRepo.save(task);
+        building.setStatus(Building.Status.ASSIGNED);
+        buildingRepo.save(building);
+
+        createOutboxEvent(task, user);
+
+        log.debug("Создана задача ID: {} для пользователя ID: {}", task.getId(), user.getId());
     }
 
     private void createOutboxEvent(Tasks task, Users user) {

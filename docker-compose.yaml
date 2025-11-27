@@ -98,7 +98,7 @@ services:
     image: grafana/promtail:2.8.0
     container_name: promtail
     volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./infrastructure/monitoring/configs/promtail-config.yaml:/etc/promtail/config.yaml:ro
     command: -config.file=/etc/promtail/config.yaml
     depends_on:
@@ -133,9 +133,34 @@ services:
     networks:
       - app-network
 
+  core-crm:
+    build:
+      context: ./CoreCRM
+      dockerfile: Dockerfile
+    container_name: core-crm
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9094
+    depends_on:
+      - postgres
+      - kafka
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app-network
+
 volumes:
   grafana-storage:
   prometheus-data:
+  loki-data:
 
 networks:
   app-network:
