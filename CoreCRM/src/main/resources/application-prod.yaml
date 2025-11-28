@@ -5,9 +5,9 @@ spring:
   messages:
     encoding: UTF-8
   datasource:
-    url: jdbc:postgresql://postgres:5432/postgres
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/postgres}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -33,7 +33,7 @@ spring:
       org.quartz.jobStore.clusterCheckinInterval: 20000
       org.quartz.jobStore.dataSource: quartzDS
       org.quartz.dataSource.quartzDS.driver: org.postgresql.Driver
-      org.quartz.dataSource.quartzDS.URL: jdbc:postgresql://postgres:5432/postgres    # ← ИЗМЕНИТЬ
+      org.quartz.dataSource.quartzDS.URL: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/postgres}
       org.quartz.dataSource.quartzDS.user: postgres
       org.quartz.dataSource.quartzDS.password: postgres
       org.quartz.threadPool.threadCount: 10
@@ -41,7 +41,7 @@ spring:
       org.quartz.scheduler.instanceId: AUTO
 
   kafka:
-    bootstrap-servers: kafka:9094
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9094}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: crm-system
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      - job_name: 'core-crm'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['core-crm-service:8080']
+        scrape_interval: 15s
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: instance
+            replacement: 'core-crm-application'
+
+      - job_name: 'price-history'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['price-history-service:8084']
+        scrape_interval: 15s
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: instance
+            replacement: 'price-history-application'
+
+      - job_name: 'content-processor'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['content-processor-service:8082']
+        scrape_interval: 15s
+
+      - job_name: 'notification-service'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['notification-service-service:8085']
+        scrape_interval: 15s

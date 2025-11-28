@@ -2,7 +2,7 @@ spring:
   application:
     name: content-loader-adapter
   kafka:
-    bootstrap-servers: kafka:9094
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9094}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer

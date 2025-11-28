@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: crm-system
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+    
+        location / {
+            proxy_pass http://core-crm-service:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /price-history/ {
+            proxy_pass http://price-history-service:8084/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+
+        location /content-processor/ {
+            proxy_pass http://content-processor-service:8082/;
+            proxy_set_header Host $host;
+        }
+
+        location /notification-service/ {
+            proxy_pass http://notification-service-service:8085/;
+            proxy_set_header Host $host;
+        }
+
+        location /content-loader/ {
+            proxy_pass http://content-loader-adapter-service:8081/;
+            proxy_set_header Host $host;
+        }
+    }
