@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -120,6 +121,7 @@ public class CreateTaskJob implements Job {
         outboxEvent.setAggregateType("TASK");
         outboxEvent.setAggregateId(task.getId().toString());
         outboxEvent.setEventType("TASK_CREATED");
+        outboxEvent.setIdempotenceKey(UUID.randomUUID().toString());
 
         Notification notification = new Notification();
         notification.setEmail(user.getEmail());

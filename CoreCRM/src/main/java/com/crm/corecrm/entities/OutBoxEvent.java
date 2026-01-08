@@ -18,6 +18,8 @@ public class OutBoxEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 36)
+    private String idempotenceKey;
     private String aggregateType;
     private String aggregateId;
     private String eventType;
