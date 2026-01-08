@@ -38,8 +38,6 @@ public class CreateTaskJob implements Job {
     private final UsersRepo usersRepo;
     private final OutBoxRepository outBoxRepo;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Autowired
-    private Scheduler scheduler;
 
     @Autowired
     public CreateTaskJob(TasksRepo tasksRepo, BuildingRepo buildingRepo, UsersRepo usersRepo, OutBoxRepository outBoxRepo) {

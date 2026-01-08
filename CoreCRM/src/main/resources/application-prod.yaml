@@ -45,10 +45,12 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: all
-      retries: 3
       properties:
         spring.json.add.type.info: true
+        max.in.flight.requests.per.connection: 5
+        acks: all
+        retries: 3
+        enable.idempotence: true
 
 logging:
   level:
