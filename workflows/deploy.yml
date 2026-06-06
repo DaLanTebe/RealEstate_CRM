@@ -1,0 +1,73 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ContentLoaderAdapter, ContentProcessor, CoreCRM, NotificationService, PriceHistory]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+
+      - name: Run tests for ${{ matrix.service }}
+        run: |
+          cd ${{ matrix.service }}
+          mvn clean test
+
+      - name: Build JAR for ${{ matrix.service }}
+        run: |
+          cd ${{ matrix.service }}
+          mvn package -DskipTests
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ matrix.service }}:latest ./${{ matrix.service }}
+
+      # Необязательно: загрузить образ в реестр
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image to GHCR
+        run: |
+          docker tag ${{ matrix.service }}:latest ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
+          docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubectl (для minikube или реального кластера)
+        run: |
+          # Для GitHub Codespaces: можно использовать контекст minikube
+          # Для реального кластера: передать kubeconfig через секрет
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f infrastructure/manifests/
+          kubectl rollout status deployment -n crm-system --timeout=5m

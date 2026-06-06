@@ -43,3 +43,21 @@ spec:
   ports:
     - port: 8081
       targetPort: 8081
+# Добавить imagePullPolicy: Always
+# readinessProbe:
+#  httpGet:
+#    path: /actuator/health/readiness
+#    port: 8081
+#  initialDelaySeconds: 20
+#  periodSeconds: 10
+#livenessProbe:
+#  httpGet:
+#    path: /actuator/health/liveness
+#    port: 8081
+#  initialDelaySeconds: 30
+#  periodSeconds: 15
+#envFrom:
+#  - configMapRef:
+#      name: crm-config
+#  - secretRef:
+#      name: kafka-secret
