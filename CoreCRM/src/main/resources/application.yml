@@ -45,6 +45,13 @@ spring:
        spring.json.add.type.info: true
        max.in.flight.requests.per.connection: 5
        acks: all
-       retries: 3
        enable.idempotence: true
+
+    retry:
+      topic:
+        attempts: 3
+        backoff:
+          delay: 1s
+          multiplier: 2
+          max-delay: 10000
 

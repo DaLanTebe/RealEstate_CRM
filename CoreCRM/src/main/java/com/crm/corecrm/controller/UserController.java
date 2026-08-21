@@ -34,7 +34,6 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody @Valid UserToSaveDTO userToSaveDTO) {
         return registrationService.registerUser(userToSaveDTO);
     }
-
     @GetMapping("/{userId}")
     public ResponseEntity<UserToRetrieveDTO> getUsers(@PathVariable("userId") UUID userId) {
         return registrationService.getUsers(userId);

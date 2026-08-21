@@ -57,7 +57,7 @@ public class Tasks {
     @FutureOrPresent(message = "Введите корректную дату и время срока срока выполнения")
     private LocalDate dueDate;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) 
     private Status status;
     @Enumerated(EnumType.STRING)
     private Priority priority;

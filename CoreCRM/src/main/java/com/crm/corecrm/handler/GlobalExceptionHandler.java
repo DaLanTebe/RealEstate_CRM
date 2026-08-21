@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,5 +27,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleValidationException(RuntimeException exception) {
 
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public String handleSQLException(SQLException exception) {
+        return "Ошибка работы с бд: " + exception.getMessage();
     }
 }

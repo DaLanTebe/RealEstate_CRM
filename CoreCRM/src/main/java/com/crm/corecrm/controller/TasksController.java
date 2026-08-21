@@ -2,6 +2,7 @@ package com.crm.corecrm.controller;
 
 import com.crm.corecrm.entities.Tasks;
 import com.crm.corecrm.service.TasksService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +34,7 @@ public class TasksController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable Long id, @RequestBody Tasks task) {
+    public ResponseEntity<String> updateTask(@PathVariable Long id, @Valid @RequestBody Tasks task) {
         return tasksService.updateTask(id, task);
     }
 
